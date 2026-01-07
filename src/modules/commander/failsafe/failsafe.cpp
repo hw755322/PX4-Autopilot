@@ -465,16 +465,16 @@ void Failsafe::checkStateAndMode(const hrt_abstime &time_us, const State &state,
 	const bool rc_loss_ignored_mission = state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_MISSION
 					     && (_param_com_rcl_except.get() & (int)ManualControlLossExceptionBits::Mission);
 
-	const bool rc_loss_ignored_auto_actions = (state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_LOITER ||
-			state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_TAKEOFF ||
-			state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_VTOL_TAKEOFF ||
-			state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_LAND ||
-			state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_RTL ||
-			state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_DESCEND ||
-			state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_FOLLOW_TARGET ||
-			state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_PRECLAND ||
-			state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_ORBIT)
-			&& (_param_com_rcl_except.get() & (int)ManualControlLossExceptionBits::Hold);
+	const bool rc_loss_ignored_auto_modes = (state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_LOITER ||
+						state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_TAKEOFF ||
+						state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_VTOL_TAKEOFF ||
+						state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_LAND ||
+						state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_RTL ||
+						state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_DESCEND ||
+						state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_FOLLOW_TARGET ||
+						state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_AUTO_PRECLAND ||
+						state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_ORBIT)
+						&& (_param_com_rcl_except.get() & (int)ManualControlLossExceptionBits::AutoModes);
 
 	const bool rc_loss_ignored_offboard = state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_OFFBOARD
 					      && (_param_com_rcl_except.get() & (int)ManualControlLossExceptionBits::Offboard);
@@ -494,7 +494,7 @@ void Failsafe::checkStateAndMode(const hrt_abstime &time_us, const State &state,
 		 state.user_intended_mode == vehicle_status_s::NAVIGATION_STATE_EXTERNAL8)
 		&& (_param_com_rcl_except.get() & (int)ManualControlLossExceptionBits::ExternalMode);
 
-	const bool rc_loss_ignored = rc_loss_ignored_mission || rc_loss_ignored_auto_actions || rc_loss_ignored_offboard ||
+	const bool rc_loss_ignored = rc_loss_ignored_mission || rc_loss_ignored_auto_modes || rc_loss_ignored_offboard ||
 				     rc_loss_ignored_external_mode || ignore_any_link_loss_vtol_takeoff_fixedwing
 				     || _manual_control_lost_at_arming || rc_loss_ignored_altitude_cruise;
 
