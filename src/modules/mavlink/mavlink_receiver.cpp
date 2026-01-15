@@ -60,7 +60,7 @@
 #include "mavlink_command_sender.h"
 #include "mavlink_main.h"
 #include "mavlink_receiver.h"
-
+#include <uORB/topics/mavlink_heartbeat.h>
 #include <lib/drivers/device/Device.hpp> // For DeviceId union
 #include <containers/LockGuard.hpp>
 
@@ -2141,6 +2141,25 @@ MavlinkReceiver::handle_message_heartbeat(mavlink_message_t *msg)
 
 		mavlink_heartbeat_t hb;
 		mavlink_msg_heartbeat_decode(msg, &hb);
+
+		mavlink_heartbeat_s hb_uorb{};
+        		hb_uorb.timestamp       = now;
+        		hb_uorb.sysid           = msg->sysid;
+        		hb_uorb.compid          = msg->compid;
+        		hb_uorb.type            = hb.type;
+        		hb_uorb.autopilot       = hb.autopilot;
+        		hb_uorb.base_mode       = hb.base_mode;
+        		hb_uorb.custom_mode     = hb.custom_mode;
+        		hb_uorb.system_status   = hb.system_status;
+        		hb_uorb.mavlink_version = hb.mavlink_version;
+
+        static orb_advert_t hb_pub{nullptr};
+
+        if (hb_pub == nullptr) {
+            hb_pub = orb_advertise(ORB_ID(mavlink_heartbeat), &hb_uorb);
+        } else {
+            orb_publish(ORB_ID(mavlink_heartbeat), hb_pub, &hb_uorb);
+        }
 
 		const bool same_system = (msg->sysid == mavlink_system.sysid);
 

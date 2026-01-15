@@ -1,0 +1,5 @@
+menuconfig EXAMPLES_alive_heartbeat
+	bool "alive_heartbeat"
+	default n
+	---help---
+		Enable support for alive_heartbeat
